@@ -98,7 +98,7 @@ class Backbone(nn.Layer, KaimingInitMixin):
 
         if arch == 'peelenet':
             self.peelenet = peelenet.PeleeNet()
-            if pretrained_backbone is not None:
+            if pretrained_backbone:
                 self.peelenet.set_state_dict(paddle.load(pretrained_backbone))
                 print('pretrained loaded')
                 with paddle.no_grad():

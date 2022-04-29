@@ -1,5 +1,5 @@
 # 基于Paddle复现
-轻量化模型的实现方式是吧backbone的resnet18替换成了peelenet
+轻量化模型的实现方式是吧backbone的resnet18替换成轻量化的骨干网络[peleenet](https://arxiv.org/pdf/1804.06882.pdf)。
 ## 1.论文简介
 STANET: [A Spatial-T emporal Attention-Based Method and a New Dataset for Remote Sensing Image Change Detection](https://www.mdpi.com/2072-4292/12/10/1662)，
 
@@ -8,7 +8,7 @@ STANET: [A Spatial-T emporal Attention-Based Method and a New Dataset for Remote
 本次复现的模型为时空注意神经网络(STANet)。
 STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)。金字塔时空注意模块(PAM)
 
-**参考实现**：https://github.com/sun222/STANET_Paddle-lite
+**参考实现**：https://github.com/sun222/STANET_Paddle
 
 ## 2.复现精度
 
@@ -17,16 +17,16 @@ STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)
 
 | Network        | opt | epoch | batch_size | dataset | categoryF1-Score | category_iou | inference model size |
 |----------------| --- | --- | --- | --- |------------------| --- |----------------------|
-| STANET         | AdamW  | 100 | 8 | LEVIR | **0.8753005**    | 0.79975343|                      |
-| STANET-peelent | AdamW  | 100 | 8 | LEVIR | **0.8887366**    | 0.77825277 | 13                   |
+| STANET         | AdamW  | 100 | 8 | LEVIR | **0.8753005**    | 0.79975343| 46m                  |
+| STANET-peelent | AdamW  | 100 | 8 | LEVIR | **0.8887366**    | 0.77825277 | 13m                  |
 
-
+预训练的backbone[下载](https://pan.baidu.com/s/14glzOTloBZJT1tQWNzvChw?pwd=984g)
 精度和loss可以用visualDL在`output\stanet\vdl_log\vdlrecords.1649956922.log`中查看。
 
 ## 3.环境依赖
 通过以下命令安装对应依赖
 ```shell
-cd STANET_Paddle-lite/
+cd STANET-Paddle-lite/
 pip install -r requirements.txt
 ```
 
@@ -49,9 +49,9 @@ python ./STANET_Paddle-lite/tools/spliter-cd.py  --image_folder  data/LEVIR-CD -
 - save_folder:保存路径
  ```shell
 # 创建列表
-python ./STANET_Paddle-lite/tools/create_list.py --image_folder ./dataset/train --A A --B B --label label --save_txt train.txt
-python ./STANET_Paddle-lite/tools/create_list.py --image_folder ./dataset/val --A A --B B --label label --save_txt val.txt
-python ./STANET_Paddle-lite/tools/create_list.py --image_folder ./dataset/test --A A --B B --label label --save_txt test.txt
+python ./STANET-Paddle-lite/tools/create_list.py --image_folder ./dataset/train --A A --B B --label label --save_txt train.txt
+python ./STANET-Paddle-lite/tools/create_list.py --image_folder ./dataset/val --A A --B B --label label --save_txt val.txt
+python ./STANET-Paddle-lite/tools/create_list.py --image_folder ./dataset/test --A A --B B --label label --save_txt test.txt
 ```
 **参数介绍**：
 
@@ -66,7 +66,7 @@ python ./STANET_Paddle-lite/tools/create_list.py --image_folder ./dataset/test -
 运行一下命令进行模型训练，在训练过程中会对模型进行评估，启用了VisualDL日志功能，运行之后在`/output/stanet/vdl_log` 文件夹下找到对应的日志文件
 
 ```shell
-python ./STANET_Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset/   --out_dir=./output/stanet/   --batch_size=8 
+python ./STANET-Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset/   --out_dir=./output/stanet/   --batch_size=8  --pretrained ./STANET-Paddle-lite/tutorials/train/best_model.pdparams
 ```
 
 **参数介绍**：
@@ -98,7 +98,7 @@ python ./STANET_Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset
 
 ### 模型验证
 
-除了可以再训练过程中验证模型精度，可以使用eval_stanet.py脚本进行测试，权重文件可在[百度云盘下载](https://pan.baidu.com/s/1f7DRYNOxfcnxxVCv11HzdQ)，提取码:8c0c 
+除了可以再训练过程中验证模型精度，可以使用eval_stanet.py脚本进行测试，权重文件可在[百度云盘下载](https://pan.baidu.com/s/14glzOTloBZJT1tQWNzvChw?pwd=984g)
 
 ```shell
 python ./STANET-Paddle-lite/tutorials/eval/stanet_eval.py --data_dir=./dataset/   --state_dict_path=./output/stanet/best_model/model.pdparams
@@ -127,7 +127,7 @@ OrderedDict([('miou', 0.8952473744572047), ('category_iou', array([0.99074132, 0
 调试过程中参考这份文档   [报错调试](https://www.paddlepaddle.org.cn/documentation/docs/zh/guides/04_dygraph_to_static/debugging_cn.html)
 
 ```shell
-!python ./STANET-Paddle-lite/deploy/export/stanet_export.py    --state_dict_path=./output/stanet/best_model/model.pdparams    --save_dir=./inference_model/  --fixed_input_shape=[1,3,256,256]
+python ./STANET-Paddle-lite/deploy/export/stanet_export.py  --state_dict_path=./output/stanet/best_model/model.pdparams    --save_dir=./inference_model/  --fixed_input_shape=[1,3,256,256]
 ```
 **参数介绍**：
 - fixed_input_shape:预测图的形状
@@ -141,7 +141,7 @@ OrderedDict([('miou', 0.8952473744572047), ('category_iou', array([0.99074132, 0
 可以使用stanet_infer.py脚本进行测试
 
 ```shell
-python ./STANET-Paddle-lite/tutorials/infer/stanet_infer.py   --infer_dir=./inference_model   --img_dir=./STANET-Paddle-lite/test_tipc/data/mini_levir_dataset --output_dir=./STANET-Paddle-lite/test_tipc/result/predict_output
+python ./STANET-Paddle-lite/tutorials/infer/stanet_infer.py   --infer_dir=./inference_model   --img_dir=./STANET-Paddle-lite/test_tipc/data/mini_levir_dataset --output_dir=./STANET-Paddle-lite/test_tipc/
 ```
 **参数介绍**：
 - infer_dir:模型文件路径
@@ -151,10 +151,10 @@ python ./STANET-Paddle-lite/tutorials/infer/stanet_infer.py   --infer_dir=./infe
 ### 使用动态图预测
 
 ```shell
-python ./STANET_Paddle-lite/tutorials/predict/stanet_predict.py --img1=./STANET-Paddle-lite/test_tipc/data/mini_levir_dataset/test/A/test_1_0_3.png --img2=./STANETPaddle-lite/test_tipc/data/mini_levir_dataset/test/B/test_1_0_3.png   --state_dict_path=.output/stanet/best_model/model.pdparams   --out_dir=./
+python ./STANET-Paddle-lite/tutorials/predict/stanet_predict.py --img1=./STANET-Paddle-lite/test_tipc/data/mini_levir_dataset/test/A/test_1_0_3.png --img2=./STANET-Paddle-lite/test_tipc/data/mini_levir_dataset/test/B/test_1_0_3.png   --state_dict_path=./output/stanet/best_model/model.pdparams   --out_dir=./
 ```
 **参数介绍**：
-- img1:A时相影像路径
+- img1：A时相影像路径
 - img2：B时相影像路径
 - state_dict_path：模型文件路径
 - out_dir：预测结果输出路径
@@ -230,7 +230,5 @@ StaNet-Paddle
 感谢百度提供的算力，以及举办的本场比赛，让我增强对paddle的熟练度，加深对变化检测模型的理解！
 
 ## 9.参考
-部分功能参考 [PaddleRS 手把手教你PaddleRS实现变化检测](https://aistudio.baidu.com/aistudio/projectdetail/3737991?channelType=0&channel=0)
-
-部分功能参考 [基于Paddle复现SNUNet-CD](https://github.com/kongdebug/SNUNet-Paddle)，
-
+[STANET_Paddle](https://github.com/sun222/STANET_Paddle)
+[peleenet](https://github.com/Robert-JunWang/PeleeNet)

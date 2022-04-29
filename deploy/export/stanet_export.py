@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
 
     # model = pdrs.tasks.STANet(in_channels=3, num_classes=2, att_type='PAM', ds_factor=1)   
-    model = pdrs.tasks.STANet(in_channels=3, num_classes=2, att_type='PAM', ds_factor=1)
+    model = pdrs.tasks.STANetPeele(in_channels=3, num_classes=2, att_type='PAM', ds_factor=1)
     model.net_initialize(pretrain_weights = args.state_dict_path)
 
     # Do dynamic-to-static cast
