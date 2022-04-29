@@ -21,7 +21,6 @@ STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)
 | STANET-peelent | AdamW  | 100 | 8 | LEVIR | **0.8887366**    | 0.77825277 | 13m                  |
 
 预训练的backbone[下载](https://pan.baidu.com/s/14glzOTloBZJT1tQWNzvChw?pwd=984g)
-精度和loss可以用visualDL在`output\stanet\vdl_log\vdlrecords.1649956922.log`中查看。
 
 ## 3.环境依赖
 通过以下命令安装对应依赖
@@ -94,7 +93,6 @@ python ./STANET-Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset
 2022-04-29 10:30:33 [INFO]	[EVAL] Finished, Epoch=100, miou=0.880533, category_iou=[0.98963635 0.7714297 ], oacc=0.989987, category_acc=[0.99152785 0.94828128], kappa=0.865796, category_F1-score=[0.99479119 0.87096846] .
 2022-04-29 10:30:33 [INFO]	Current evaluated best model on eval_dataset is epoch_69, miou=0.8865562390700734
 ```
-
 
 ### 模型验证
 
