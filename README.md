@@ -1,4 +1,5 @@
 # 基于Paddle复现
+轻量化模型的实现方式是吧backbone的resnet18替换成了peelenet
 ## 1.论文简介
 STANET: [A Spatial-T emporal Attention-Based Method and a New Dataset for Remote Sensing Image Change Detection](https://www.mdpi.com/2072-4292/12/10/1662)，
 
@@ -7,16 +8,17 @@ STANET: [A Spatial-T emporal Attention-Based Method and a New Dataset for Remote
 本次复现的模型为时空注意神经网络(STANet)。
 STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)。金字塔时空注意模块(PAM)
 
-**参考实现**：https://github.com/justchenhao/STANet
+**参考实现**：https://github.com/sun222/STANET_Paddle-lite
 
 ## 2.复现精度
 
-在LEVIR的测试集的测试效果如下表,达到验收指标，F1-Score=0.873
+在LEVIR的测试集的测试效果如下表,达到验收指标，F1-Score=0.889
 
 
-| Network | opt | epoch | batch_size | dataset | categoryF1-Score | category_iou |
-| --- | --- | --- | --- | --- | --- | --- |
-| STANET | AdamW  | 100 | 8 | LEVIR | **0.8753005** | 0.77825277 |
+| Network        | opt | epoch | batch_size | dataset | categoryF1-Score | category_iou | inference model size |
+|----------------| --- | --- | --- | --- |------------------| --- |----------------------|
+| STANET         | AdamW  | 100 | 8 | LEVIR | **0.8753005**    | 0.79975343|                      |
+| STANET-peelent | AdamW  | 100 | 8 | LEVIR | **0.8887366**    | 0.77825277 | 13                   |
 
 
 精度和loss可以用visualDL在`output\stanet\vdl_log\vdlrecords.1649956922.log`中查看。
@@ -24,7 +26,7 @@ STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)
 ## 3.环境依赖
 通过以下命令安装对应依赖
 ```shell
-cd STANET_Paddle/
+cd STANET_Paddle-lite/
 pip install -r requirements.txt
 ```
 
@@ -38,7 +40,7 @@ pip install -r requirements.txt
 
 ```shell
 #切片
-python ./STANET_Paddle/tools/spliter-cd.py  --image_folder  data/LEVIR-CD --block_size 256 --save_folder dataset
+python ./STANET_Paddle-lite/tools/spliter-cd.py  --image_folder  data/LEVIR-CD --block_size 256 --save_folder dataset
 ```
 **参数介绍**：
 
@@ -47,9 +49,9 @@ python ./STANET_Paddle/tools/spliter-cd.py  --image_folder  data/LEVIR-CD --bloc
 - save_folder:保存路径
  ```shell
 # 创建列表
-python ./STANET_Paddle/tools/create_list.py --image_folder ./dataset/train --A A --B B --label label --save_txt train.txt
-python ./STANET_Paddle/tools/create_list.py --image_folder ./dataset/val --A A --B B --label label --save_txt val.txt
-python ./STANET_Paddle/tools/create_list.py --image_folder ./dataset/test --A A --B B --label label --save_txt test.txt
+python ./STANET_Paddle-lite/tools/create_list.py --image_folder ./dataset/train --A A --B B --label label --save_txt train.txt
+python ./STANET_Paddle-lite/tools/create_list.py --image_folder ./dataset/val --A A --B B --label label --save_txt val.txt
+python ./STANET_Paddle-lite/tools/create_list.py --image_folder ./dataset/test --A A --B B --label label --save_txt test.txt
 ```
 **参数介绍**：
 
@@ -64,7 +66,7 @@ python ./STANET_Paddle/tools/create_list.py --image_folder ./dataset/test --A A 
 运行一下命令进行模型训练，在训练过程中会对模型进行评估，启用了VisualDL日志功能，运行之后在`/output/stanet/vdl_log` 文件夹下找到对应的日志文件
 
 ```shell
-!python ./STANET_Paddle/tutorials/train/stanet_train.py --data_dir=./dataset/   --out_dir=./output/stanet/   --batch_size=8 
+python ./STANET_Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset/   --out_dir=./output/stanet/   --batch_size=8 
 ```
 
 **参数介绍**：
@@ -76,23 +78,22 @@ python ./STANET_Paddle/tools/create_list.py --image_folder ./dataset/test --A A 
 
 其他超参数已经设置好。最后一个epoch结束，模型验证日志如下：
 ```shell
-2022-04-15 07:27:06 [INFO]	[TRAIN] Epoch=100/100, Step=730/890, loss=0.039839, lr=0.000000, time_each_step=0.23s, eta=0:0:36
-2022-04-15 07:27:11 [INFO]	[TRAIN] Epoch=100/100, Step=750/890, loss=0.012171, lr=0.000000, time_each_step=0.23s, eta=0:0:31
-2022-04-15 07:27:15 [INFO]	[TRAIN] Epoch=100/100, Step=770/890, loss=0.003880, lr=0.000000, time_each_step=0.23s, eta=0:0:27
-2022-04-15 07:27:20 [INFO]	[TRAIN] Epoch=100/100, Step=790/890, loss=0.008041, lr=0.000000, time_each_step=0.23s, eta=0:0:22
-2022-04-15 07:27:24 [INFO]	[TRAIN] Epoch=100/100, Step=810/890, loss=0.011668, lr=0.000000, time_each_step=0.22s, eta=0:0:17
-2022-04-15 07:27:29 [INFO]	[TRAIN] Epoch=100/100, Step=830/890, loss=0.015986, lr=0.000000, time_each_step=0.23s, eta=0:0:13
-2022-04-15 07:27:33 [INFO]	[TRAIN] Epoch=100/100, Step=850/890, loss=0.017611, lr=0.000000, time_each_step=0.23s, eta=0:0:9
-2022-04-15 07:27:38 [INFO]	[TRAIN] Epoch=100/100, Step=870/890, loss=0.005013, lr=0.000000, time_each_step=0.22s, eta=0:0:4
-2022-04-15 07:27:42 [INFO]	[TRAIN] Epoch=100/100, Step=890/890, loss=0.011437, lr=0.000000, time_each_step=0.22s, eta=0:0:0
-2022-04-15 07:27:43 [INFO]	[TRAIN] Epoch 100 finished, loss=0.01370322 .
-2022-04-15 07:27:43 [WARNING]	Segmenter only supports batch_size=1 for each gpu/cpu card during evaluation, so batch_size is forcibly set to 1.
-2022-04-15 07:27:43 [INFO]	Start to evaluate(total_samples=1024, total_steps=1024)...
-2022-04-15 07:28:37 [INFO]	[EVAL] Finished, Epoch=100, miou=0.874413, category_iou=[0.98915931 0.75966758], oacc=0.989518, category_acc=[0.99084709 0.95264434], kappa=0.858022, category_F1-score=[0.99455012 0.86342169] .
-2022-04-15 07:28:37 [INFO]	Current evaluated best model on eval_dataset is epoch_78, miou=0.8840882464473624
-2022-04-15 07:28:38 [INFO]	Model saved in output/stanet/epoch_100.
+2022-04-29 10:27:22 [INFO]	[TRAIN] Epoch=100/100, Step=710/890, loss=0.023258, lr=0.000000, time_each_step=0.47s, eta=0:1:23
+2022-04-29 10:27:32 [INFO]	[TRAIN] Epoch=100/100, Step=730/890, loss=0.010142, lr=0.000000, time_each_step=0.46s, eta=0:1:13
+2022-04-29 10:27:41 [INFO]	[TRAIN] Epoch=100/100, Step=750/890, loss=0.000957, lr=0.000000, time_each_step=0.46s, eta=0:1:4
+2022-04-29 10:27:50 [INFO]	[TRAIN] Epoch=100/100, Step=770/890, loss=0.026426, lr=0.000000, time_each_step=0.47s, eta=0:0:56
+2022-04-29 10:28:00 [INFO]	[TRAIN] Epoch=100/100, Step=790/890, loss=0.014143, lr=0.000000, time_each_step=0.46s, eta=0:0:46
+2022-04-29 10:28:09 [INFO]	[TRAIN] Epoch=100/100, Step=810/890, loss=0.006366, lr=0.000000, time_each_step=0.46s, eta=0:0:37
+2022-04-29 10:28:18 [INFO]	[TRAIN] Epoch=100/100, Step=830/890, loss=0.006101, lr=0.000000, time_each_step=0.46s, eta=0:0:27
+2022-04-29 10:28:27 [INFO]	[TRAIN] Epoch=100/100, Step=850/890, loss=0.003354, lr=0.000000, time_each_step=0.47s, eta=0:0:18
+2022-04-29 10:28:37 [INFO]	[TRAIN] Epoch=100/100, Step=870/890, loss=0.013224, lr=0.000000, time_each_step=0.47s, eta=0:0:9
+2022-04-29 10:28:44 [INFO]	[TRAIN] Epoch=100/100, Step=890/890, loss=0.012032, lr=0.000000, time_each_step=0.38s, eta=0:0:0
+2022-04-29 10:28:44 [INFO]	[TRAIN] Epoch 100 finished, loss=0.01695009 .
+2022-04-29 10:28:44 [WARNING]	Segmenter only supports batch_size=1 for each gpu/cpu card during evaluation, so batch_size is forcibly set to 1.
+2022-04-29 10:28:44 [INFO]	Start to evaluate(total_samples=1024, total_steps=1024)...
+2022-04-29 10:30:33 [INFO]	[EVAL] Finished, Epoch=100, miou=0.880533, category_iou=[0.98963635 0.7714297 ], oacc=0.989987, category_acc=[0.99152785 0.94828128], kappa=0.865796, category_F1-score=[0.99479119 0.87096846] .
+2022-04-29 10:30:33 [INFO]	Current evaluated best model on eval_dataset is epoch_69, miou=0.8865562390700734
 ```
-最好的结果在第78个epoch test时达到验收指标。
 
 
 ### 模型验证
@@ -100,7 +101,7 @@ python ./STANET_Paddle/tools/create_list.py --image_folder ./dataset/test --A A 
 除了可以再训练过程中验证模型精度，可以使用eval_stanet.py脚本进行测试，权重文件可在[百度云盘下载](https://pan.baidu.com/s/1f7DRYNOxfcnxxVCv11HzdQ)，提取码:8c0c 
 
 ```shell
-!python ./STANET_Paddle/tutorials/eval/stanet_eval.py --data_dir=./dataset/   --state_dict_path=./output/home/aistudio/output/stanet/best_model/model.pdparams
+python ./STANET-Paddle-lite/tutorials/eval/stanet_eval.py --data_dir=./dataset/   --state_dict_path=./output/stanet/best_model/model.pdparams
 ```
 **参数介绍**：
 
@@ -111,14 +112,11 @@ python ./STANET_Paddle/tools/create_list.py --image_folder ./dataset/test --A A 
 输出如下：
 
 ```shell
-2022-04-15 08:50:50 [INFO]	1024 samples in file val.txt
-2022-04-15 08:50:51 [INFO]	Loading pretrained model from output/stanet/best_model/model.pdparams
-2022-04-15 08:50:51 [INFO]	There are 186/186 variables loaded into STANet.
-2022-04-15 08:50:51 [INFO]	Start to evaluate(total_samples=1024, total_steps=1024)...
-OrderedDict([('miou', 0.8840882464473624), ('category_iou', array([0.98992372, 0.77825277])), ('oacc', 0.990267887711525), ('category_acc', array([0.99189824, 0.94670973])), ('kappa', 0.8702668237858971), ('category_F1-score', array([0.99493635, 0.8753005 ]))])
+2022-04-29 10:43:57 [INFO]	Loading pretrained model from ../train/output/stanet2/best_model/model.pdparams
+2022-04-29 10:43:57 [INFO]	There are 651/651 variables loaded into STANetPeele.
+2022-04-29 10:43:57 [INFO]	Start to evaluate(total_samples=1024, total_steps=1024)...
+OrderedDict([('miou', 0.8952473744572047), ('category_iou', array([0.99074132, 0.79975343])), ('oacc', 0.9910714775323868), ('category_acc', array([0.99344242, 0.93150723])), ('kappa', 0.8840960071177285), ('category_F1-score', array([0.99534913, 0.88873666]))])
 ```
-
-
 
 ### 导出
 
@@ -129,7 +127,7 @@ OrderedDict([('miou', 0.8840882464473624), ('category_iou', array([0.98992372, 0
 调试过程中参考这份文档   [报错调试](https://www.paddlepaddle.org.cn/documentation/docs/zh/guides/04_dygraph_to_static/debugging_cn.html)
 
 ```shell
-!python ./STANET_Paddle/deploy/export/stanet_export.py    --state_dict_path=./output/home/aistudio/output/stanet/best_model/model.pdparams    --save_dir=./inference_model/  --fixed_input_shape=[1,3,256,256]
+!python ./STANET-Paddle-lite/deploy/export/stanet_export.py    --state_dict_path=./output/stanet/best_model/model.pdparams    --save_dir=./inference_model/  --fixed_input_shape=[1,3,256,256]
 ```
 **参数介绍**：
 - fixed_input_shape:预测图的形状
@@ -143,7 +141,7 @@ OrderedDict([('miou', 0.8840882464473624), ('category_iou', array([0.98992372, 0
 可以使用stanet_infer.py脚本进行测试
 
 ```shell
-!python ./STANET_Paddle/tutorials/infer/stanet_infer.py   --infer_dir=./inference_model   --img_dir=./STANET_Paddle/test_tipc/data/mini_levir_dataset --output_dir=./STANET_Paddle/test_tipc/result/predict_output
+python ./STANET-Paddle-lite/tutorials/infer/stanet_infer.py   --infer_dir=./inference_model   --img_dir=./STANET-Paddle-lite/test_tipc/data/mini_levir_dataset --output_dir=./STANET-Paddle-lite/test_tipc/result/predict_output
 ```
 **参数介绍**：
 - infer_dir:模型文件路径
@@ -153,7 +151,7 @@ OrderedDict([('miou', 0.8840882464473624), ('category_iou', array([0.98992372, 0
 ### 使用动态图预测
 
 ```shell
-!python ./STANET_Paddle/tutorials/predict/stanet_predict.py --img1=./STANET_Paddle/test_tipc/data/mini_levir_dataset/test/A/test_1_0_3.png --img2=./STANET_Paddle/test_tipc/data/mini_levir_dataset/test/B/test_1_0_3.png   --state_dict_path=./output/home/aistudio/output/stanet/best_model/model.pdparams   --out_dir=./
+python ./STANET_Paddle-lite/tutorials/predict/stanet_predict.py --img1=./STANET-Paddle-lite/test_tipc/data/mini_levir_dataset/test/A/test_1_0_3.png --img2=./STANETPaddle-lite/test_tipc/data/mini_levir_dataset/test/B/test_1_0_3.png   --state_dict_path=.output/stanet/best_model/model.pdparams   --out_dir=./
 ```
 **参数介绍**：
 - img1:A时相影像路径
@@ -183,9 +181,9 @@ pip3 install ./dist/auto_log-1.0.0-py3-none-any.whl
 
 
 ```shell
-bash  ./STANET_Paddle/test_tipc/prepare.sh  ./STANET_Paddle/test_tipc/configs/stanet/train_infer_python.txt 'lite_train_lite_infer'
+bash  ./STANET-Paddle-lite/test_tipc/prepare.sh  ./STANET-Paddle-lite/test_tipc/configs/stanet/train_infer_python.txt 'lite_train_lite_infer'
 
-bash  ./STANET_Paddle/test_tipc/test_train_inference_python.sh ./STANET_Paddle/test_tipc/configs/stanet/train_infer_python.txt 'lite_train_lite_infer'
+bash  ./STANET-Paddle-lite/test_tipc/test_train_inference_python.sh ./STANET-Paddle-lite/test_tipc/configs/stanet/train_infer_python.txt 'lite_train_lite_infer'
 ```
 
 测试结果如截图所示
@@ -235,5 +233,4 @@ StaNet-Paddle
 部分功能参考 [PaddleRS 手把手教你PaddleRS实现变化检测](https://aistudio.baidu.com/aistudio/projectdetail/3737991?channelType=0&channel=0)
 
 部分功能参考 [基于Paddle复现SNUNet-CD](https://github.com/kongdebug/SNUNet-Paddle)，
-
 

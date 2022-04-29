@@ -36,7 +36,7 @@ from .utils import seg_metrics as metrics
 
 __all__ = [
     "CDNet", "FCEarlyFusion", "FCSiamConc", "FCSiamDiff", "STANet", "BIT",
-    "SNUNet", "DSIFN", "DSAMNet", "ChangeStar"
+    "SNUNet", "DSIFN", "DSAMNet", "ChangeStar", "STANetPeele"
 ]
 
 
@@ -101,7 +101,7 @@ class BaseChangeDetector(BaseModel):
         return [
             InputSpec(
                 shape=image_shape, name='image', dtype='float32'), InputSpec(
-                    shape=image_shape, name='image2', dtype='float32')
+                shape=image_shape, name='image2', dtype='float32')
         ]
 
     def run(self, net, inputs, mode):
@@ -123,7 +123,7 @@ class BaseChangeDetector(BaseModel):
                     label_map_list.append(
                         paddle.argmax(
                             logit, axis=-1, keepdim=False, dtype='int32')
-                        .squeeze().numpy())
+                            .squeeze().numpy())
                     score_map_list.append(
                         F.softmax(
                             logit, axis=-1).squeeze().numpy().astype('float32'))
@@ -148,12 +148,12 @@ class BaseChangeDetector(BaseModel):
                                                            self.num_classes)
         if mode == 'train':
             if hasattr(net, 'USE_MULTITASK_DECODER') and \
-                net.USE_MULTITASK_DECODER is True:
+                    net.USE_MULTITASK_DECODER is True:
                 # CD+Seg
                 if len(inputs) != 5:
                     raise ValueError(
                         "Cannot perform loss computation with {} inputs.".
-                        format(len(inputs)))
+                            format(len(inputs)))
                 labels_list = [
                     inputs[2 + idx]
                     for idx in map(attrgetter('value'), net.OUT_TYPES)
@@ -186,7 +186,7 @@ class BaseChangeDetector(BaseModel):
         else:
             losses, coef = list(zip(*self.use_mixed_loss))
             if not set(losses).issubset(
-                ['CrossEntropyLoss', 'DiceLoss', 'LovaszSoftmaxLoss']):
+                    ['CrossEntropyLoss', 'DiceLoss', 'LovaszSoftmaxLoss']):
                 raise ValueError(
                     "Only 'CrossEntropyLoss', 'DiceLoss', 'LovaszSoftmaxLoss' are supported."
                 )
@@ -278,15 +278,15 @@ class BaseChangeDetector(BaseModel):
 
         if pretrain_weights is not None and not osp.exists(pretrain_weights):
             if pretrain_weights not in seg_pretrain_weights_dict[
-                    self.model_name]:
+                self.model_name]:
                 logging.warning(
                     "Path of pretrain_weights('{}') does not exist!".format(
                         pretrain_weights))
                 logging.warning("Pretrain_weights is forcibly set to '{}'. "
                                 "If don't want to use pretrain weights, "
                                 "set pretrain_weights to be None.".format(
-                                    seg_pretrain_weights_dict[self.model_name][
-                                        0]))
+                    seg_pretrain_weights_dict[self.model_name][
+                        0]))
                 pretrain_weights = seg_pretrain_weights_dict[self.model_name][0]
         elif pretrain_weights is not None and osp.exists(pretrain_weights):
             if osp.splitext(pretrain_weights)[-1] != '.pdparams':
@@ -537,7 +537,7 @@ class BaseChangeDetector(BaseModel):
         for im1, im2 in images:
             sample = {'image_t1': im1, 'image_t2': im2}
             if isinstance(sample['image_t1'], str) or \
-                isinstance(sample['image_t2'], str):
+                    isinstance(sample['image_t2'], str):
                 sample = ImgDecoder(to_rgb=False)(sample)
             ori_shape = sample['image'].shape[:2]
             im1, im2 = transforms(sample)[:2]
@@ -749,6 +749,26 @@ class STANet(BaseChangeDetector):
         })
         super(STANet, self).__init__(
             model_name='STANet',
+            num_classes=num_classes,
+            use_mixed_loss=use_mixed_loss,
+            **params)
+
+
+class STANetPeele(BaseChangeDetector):
+    def __init__(self,
+                 num_classes=2,
+                 use_mixed_loss=False,
+                 in_channels=3,
+                 att_type='BAM',
+                 ds_factor=1,
+                 **params):
+        params.update({
+            'in_channels': in_channels,
+            'att_type': att_type,
+            'ds_factor': ds_factor
+        })
+        super(STANetPeele, self).__init__(
+            model_name='STANetPeele',
             num_classes=num_classes,
             use_mixed_loss=use_mixed_loss,
             **params)

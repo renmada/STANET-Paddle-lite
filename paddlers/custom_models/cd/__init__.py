@@ -16,6 +16,7 @@ from .bit import BIT
 from .cdnet import CDNet
 from .dsifn import DSIFN
 from .stanet import STANet
+from .stanet_peelenet import STANet as STANetPeele
 from .snunet import SNUNet
 from .dsamnet import DSAMNet
 from .changestar import ChangeStar
