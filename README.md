@@ -72,9 +72,9 @@ python ./STANET-Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset
 **参数介绍**：
 
 - data_dir:数据集路径
-
 - out_dir:模型输出文件夹
 - batch_size：batch大小
+- pretrained：backbone路径
 
 其他超参数已经设置好。最后一个epoch结束，模型验证日志如下：
 ```shell
