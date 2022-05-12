@@ -27,6 +27,7 @@ STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)
 ```shell
 cd STANET-Paddle-lite/
 pip install -r requirements.txt
+python -m pip install paddlepaddle-gpu==0.0.0.post101 -f https://www.paddlepaddle.org.cn/whl/linux/gpu/develop.html
 ```
 
 ## 4.数据集
@@ -65,7 +66,7 @@ python ./STANET-Paddle-lite/tools/create_list.py --image_folder ./dataset/test -
 运行一下命令进行模型训练，在训练过程中会对模型进行评估，启用了VisualDL日志功能，运行之后在`/output/stanet/vdl_log` 文件夹下找到对应的日志文件
 
 ```shell
-python ./STANET-Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset/   --out_dir=./output/stanet/   --batch_size=8  --pretrained ./STANET-Paddle-lite/tutorials/train/best_model.pdparams
+python ./STANET-Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset/   --out_dir=./output/stanet/   --batch_size=8  --pretrained ./STANET-Paddle-lite/tutorials/train/peleenet.pdparams
 ```
 
 **参数介绍**：
