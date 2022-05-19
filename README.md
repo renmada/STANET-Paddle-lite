@@ -11,8 +11,7 @@ STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)
 **参考实现**：https://github.com/sun222/STANET_Paddle
 
 ## 2.复现精度
-**更新**
-更新训练结果：'''STANET-peelent-newest'''
+**更新训练结果**```STANET-peelent-newest```
 
 | Network               | opt | epoch | batch_size | dataset | categoryF1-Score | category_iou | inference model size |
 |-----------------------| --- | --- | --- | --- |------------------|--------------|----------------------|
