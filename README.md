@@ -187,10 +187,8 @@ bash  ./STANET-Paddle-lite/test_tipc/test_train_inference_python.sh ./STANET-Pad
 
 测试结果如截图所示
 
-<img src=./docs/TIFC_pre.png></img>
-
-<img src=./docs/TIFC_next.png></img>
-<img src=./docs/TIFC_result.png></img>
+<img src=./docs/tipc1.png></img>
+<img src=./docs/tipc2.png></img>
 
 ## 6.代码结构与详细说明
 
@@ -219,11 +217,11 @@ StaNet-Paddle
 
 ## 7.模型信息
 
-| 信息 | 描述 |
-| --- | --- |
-|模型名称| STANET |
-|框架版本| PaddlePaddle==2.2.0|
-|应用场景| 遥感图像变化检测 |
+| 信息 | 描述                    |
+| --- |-----------------------|
+|模型名称| STANET                |
+|框架版本| PaddlePaddle==2.3.0rc |
+|应用场景| 遥感图像变化检测              |
 
 ## 8.说明
 感谢百度提供的算力，以及举办的本场比赛，让我增强对paddle的熟练度，加深对变化检测模型的理解！
