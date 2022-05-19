@@ -100,7 +100,7 @@ python ./STANET-Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset
 除了可以再训练过程中验证模型精度，可以使用eval_stanet.py脚本进行测试，权重文件可在[百度云盘下载](https://pan.baidu.com/s/14glzOTloBZJT1tQWNzvChw?pwd=984g)
 
 ```shell
-python ./STANET-Paddle-lite/tutorials/eval/stanet_eval.py --data_dir=./dataset/   --state_dict_path=./output/stanet/best_model/model.pdparams
+python ./STANET-Paddle-lite/tutorials/eval/stanet_eval.py --data_dir=./dataset/  --state_dict_path=./output/stanet/best_model/model.pdparams
 ```
 **参数介绍**：
 
