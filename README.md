@@ -11,14 +11,14 @@ STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)
 **参考实现**：https://github.com/sun222/STANET_Paddle
 
 ## 2.复现精度
+**更新**
+更新训练结果：'''STANET-peelent-newest'''
 
-在LEVIR的测试集的测试效果如下表,达到验收指标，F1-Score=0.889
-
-
-| Network        | opt | epoch | batch_size | dataset | categoryF1-Score | category_iou | inference model size |
-|----------------| --- | --- | --- | --- |------------------| --- |----------------------|
-| STANET         | AdamW  | 100 | 8 | LEVIR | **0.8753005**    | 0.79975343| 46m                  |
-| STANET-peelent | AdamW  | 100 | 8 | LEVIR | **0.8887366**    | 0.77825277 | 13m                  |
+| Network               | opt | epoch | batch_size | dataset | categoryF1-Score | category_iou | inference model size |
+|-----------------------| --- | --- | --- | --- |------------------|--------------|----------------------|
+| STANET                | AdamW  | 100 | 8 | LEVIR | **0.8753005**    | 0.79975343   | -                    |
+| STANET-peelent        | AdamW  | 100 | 8 | LEVIR | **0.8887366**    | 0.77825277   | 20m                  |
+| STANET-peelent-newest | AdamW  | 100 | 8 | LEVIR | **0.8909313**    | -            | 20m                  |
 
 预训练的backbone[下载](https://pan.baidu.com/s/14glzOTloBZJT1tQWNzvChw?pwd=984g)
 
@@ -27,6 +27,7 @@ STANet设计了两种类型的自我注意模块。基本时空注意模块(BAM)
 ```shell
 cd STANET-Paddle-lite/
 pip install -r requirements.txt
+python setup.py install
 python -m pip install paddlepaddle-gpu==0.0.0.post101 -f https://www.paddlepaddle.org.cn/whl/linux/gpu/develop.html
 ```
 
@@ -70,7 +71,6 @@ python ./STANET-Paddle-lite/tutorials/train/stanet_train.py --data_dir=./dataset
 ```
 
 **参数介绍**：
-
 - data_dir:数据集路径
 - out_dir:模型输出文件夹
 - batch_size：batch大小
