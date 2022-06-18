@@ -66,13 +66,17 @@ if __name__ == "__main__":
     # API说明：https://github.com/PaddlePaddle/paddlers/blob/develop/docs/apis/transforms/transforms.md
 
     train_transforms = T.Compose([
-        T.Resize(target_size=256),
+        T.Resize(target_size=512),
         T.RandomHorizontalFlip(),
-        T.Normalize(
-            mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        T.RandomVerticalFlip(),
+        T.MixupImage(),
+        T.RandomDistort(),
+        T.RandomBlur(),
+        T.RandomSwap(),
+        T.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
     eval_transforms = T.Compose([
-        T.Resize(target_size=256),
+        T.Resize(target_size=512),
         T.Normalize(
             mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
